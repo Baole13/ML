@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Env
+.env
+
+# Serving artifacts (generated; do not commit weights/indexes)
+artifacts/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Notebook temp dump
+_nb_dump.txt
+
+# Local run logs / temp
+_server.log
+_server.err
+_vite.log
+_vite.err
+_venv_check.txt
+

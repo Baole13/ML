@@ -1,0 +1,69 @@
+# ============ Root: monorepo BTL (backend + frontend) ============
+
+# ---- Python (backend) ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# ---- Node (frontend) ----
+node_modules/
+dist/
+dist-ssr/
+*.tsbuildinfo
+
+# ---- Env secrets (never commit) ----
+.env
+.env.local
+.env.*.local
+
+# ---- Serving artifacts: generated, LARGE - rebuild via scripts ----
+# full 90-species gallery ~700MB, synthetic/mock, small real demo
+src/backend/artifacts/
+src/backend/artifacts_full90/
+src/backend/artifacts_real/
+src/backend/.checkpoints/
+*.faiss
+*.joblib
+*.npy
+!src/backend/tests/**
+
+# ---- Kaggle / dataset caches (outside repo, just in case) ----
+.kaggle/
+*.zip
+
+# ---- Local run logs / temp / debug dumps ----
+src/backend/_*.log
+src/backend/_*.err
+src/backend/_*.txt
+src/frontend/_*.log
+src/frontend/_*.err
+src/frontend/_*.txt
+*_nb_dump.txt
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Torch / model caches ----
+*.pth
+*.pt
+*.bin
+*.safetensors
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~

@@ -270,7 +270,7 @@ with:
 QUICK_MODE = False
 ```
 
-The final table is generated in **Phase 18 — Benchmark Dashboard** and exported as:
+The final table is generated in **Phase 19 — Benchmark Dashboard** and exported as:
 
 ```text
 benchmark_results.csv
@@ -739,7 +739,7 @@ For official benchmark results:
 3. Restart the Colab runtime.
 4. Run all cells from the beginning.
 5. Keep the generated fixed split unchanged when comparing models.
-6. Use the Phase 18 benchmark dashboard / `benchmark_results.csv`.
+6. Use the Phase 19 benchmark dashboard / `benchmark_results.csv`.
 7. Do not report preliminary Quick Mode metrics as final results.
 
 Important generated files include:

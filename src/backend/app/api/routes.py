@@ -121,7 +121,7 @@ def gallery_file(request: Request, filename: str):
     # Prevent path traversal: resolve and ensure it stays under gallery_dir.
     safe_root = gallery_dir.resolve()
     target = (safe_root / filename).resolve()
-    if not str(target).startswith(str(safe_root)) or not target.is_file():
+    if not target.is_relative_to(safe_root) or not target.is_file():
         raise HTTPException(status_code=404, detail="Gallery image not found.")
 
     return FileResponse(str(target))

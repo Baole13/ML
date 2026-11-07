@@ -1,7 +1,8 @@
 # Nối notebook Colab → Backend
 
-`docs/plan.md` yêu cầu thêm **một** cell `Serving Export` vào notebook để xuất
-gói artifact hoàn chỉnh, rồi backend load gói đó. Đây là các bước cụ thể.
+Thêm cell `Serving Export` vào cuối lần chạy benchmark full để xuất gói
+artifact mà backend sử dụng. Chỉ dùng artifact được tạo từ lần benchmark sạch
+chính thức cho bản demo nộp bài.
 
 ## 1. Thêm cell cuối cùng vào notebook
 
@@ -30,7 +31,8 @@ export_serving_package(
 Cell này sẽ:
 - L2-normalize embeddings (khớp notebook).
 - Bọc `LinearSVC` trong `CalibratedClassifierCV` → classifier có
-  `predict_proba` (confidence thật). Tương thích sklearn cũ và mới.
+  `predict_proba`. Đây là xác suất dự đoán; chỉ gọi là confidence đã hiệu
+  chỉnh tốt sau khi đánh giá calibration trên dữ liệu giữ lại.
 - Build FAISS `IndexFlatIP`.
 - Copy ảnh gallery vào `artifacts/gallery/<species>/<id>.jpg` với **ID ổn định**.
 - Ghi `manifest.json` (preprocessing contract) + `class_mapping.json`.
@@ -67,7 +69,7 @@ ENCODER=dinov2 ARTIFACTS_DIR=./artifacts uvicorn app.main:app --reload
 
 ```bash
 curl -F "image=@some_tiger.jpg" -F "k=5" http://127.0.0.1:8000/api/v1/search
-curl http://127.0.0.1:8000/model-info
+curl http://127.0.0.1:8000/api/v1/model-info
 ```
 
 ## Lưu ý quan trọng về contract

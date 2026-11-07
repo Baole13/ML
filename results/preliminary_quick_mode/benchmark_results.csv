@@ -1,0 +1,6 @@
+model,mode,classes,train_images,val_images,test_images,classification_accuracy,macro_f1,retrieval_precision_at_5,retrieval_map_at_10,cross_dataset_precision_at_5,cross_dataset_map_at_10
+PCA + KNN,quick,20,560,120,120,0.2083,0.2011,0.1300,0.0548,,
+HOG + Linear SVM,quick,20,560,120,120,0.1167,0.1206,0.0700,0.0294,,
+MobileNetV3-Small frozen + KNN cosine,quick,20,560,120,120,0.8000,0.7865,0.6867,0.5023,0.7120,0.5471
+ResNet18 fine-tuned,quick,20,560,120,120,0.7750,0.7499,0.7817,0.7249,0.8032,0.7323
+DINOv2 frozen + Linear SVM / FAISS,quick,20,560,120,120,0.9667,0.9672,0.9350,0.8982,0.9488,0.9094

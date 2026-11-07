@@ -1,0 +1,16 @@
+{
+  "status": "preliminary_quick_mode",
+  "source": "saved outputs in notebook/Animal_Visual_Search_Clean_Benchmark_v1.ipynb",
+  "quick_mode": true,
+  "seed": 42,
+  "classes": 20,
+  "working_images": 800,
+  "train_images": 560,
+  "validation_images": 120,
+  "test_images": 120,
+  "external_evaluation_queries": 250,
+  "resnet_epochs": 2,
+  "device": "CUDA",
+  "gpu": "Tesla T4",
+  "warning": "Smoke-test evidence only. Do not report as official full 90-class clean benchmark."
+}

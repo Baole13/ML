@@ -1,0 +1,12 @@
+item,value
+Animal-90 raw image rows,5400
+Animal-90 corrupted/unreadable,0
+Animal-90 valid before dedupe,5400
+Animal-90 clean representatives,4525
+Animal-90 removed duplicate/near-duplicate rows,875
+Animal-90 ambiguous cross-label duplicate groups,1
+Working classes,20
+Train ↔ Val leakage after clean split,0
+Train ↔ Test leakage after clean split,0
+Wild external cross-dataset duplicates removed,106
+Wild external valid evaluation queries,250

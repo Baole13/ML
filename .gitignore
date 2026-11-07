@@ -9,6 +9,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .venv/
+.venv-ml/
 venv/
 env/
 
@@ -34,7 +35,9 @@ src/backend/.checkpoints/
 *.npy
 !src/backend/tests/**
 
-# ---- Kaggle / dataset caches (outside repo, just in case) ----
+# ---- Kaggle / dataset caches ----
+.dataset_cache/
+.animal_visual_search_cache/
 .kaggle/
 *.zip
 
@@ -56,6 +59,9 @@ pnpm-debug.log*
 *.pt
 *.bin
 *.safetensors
+
+# ---- Generated official serving package (large binary/gallery output) ----
+results/official_full/artifacts/
 
 # ---- Project docs (local only, not published to GitHub) ----
 docs/

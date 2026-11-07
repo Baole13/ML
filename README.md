@@ -84,6 +84,8 @@ The main rules are:
 9. Audit Animal-90 against Wild Animals before cross-dataset evaluation.
 10. Report classification and retrieval metrics separately.
 
+Colab setup is documented in [`notebook/COLAB_RUN.md`](notebook/COLAB_RUN.md); local setup is in [`notebook/LOCAL_RUN.md`](notebook/LOCAL_RUN.md). The notebook automatically saves local outputs under `results/official_full/`.
+
 For the official experiment, set:
 
 ```python
@@ -179,7 +181,7 @@ Wild Animals queries are evaluated against the Animal-90 gallery using:
 - Cross-dataset Precision@5
 - Cross-dataset mAP@10
 
-The notebook exports the official comparison table to:
+The notebook exports the comparison table to:
 
 ```text
 benchmark_results.csv
@@ -191,7 +193,8 @@ Data-integrity statistics are exported separately to:
 integrity_summary.csv
 ```
 
-No preliminary Quick Mode metric should be treated as the final project result.
+Quick Mode is a smoke-test subset. Its metrics must not be presented as final
+full-dataset results.
 
 ---
 
@@ -204,6 +207,9 @@ The following results were obtained during the iterative development of the proj
 > **Important:** these values are kept as **preliminary experimental evidence only**.  
 > A later integrity audit found perceptual duplicate leakage in the earlier split, so these numbers must **not** be reported as the final clean benchmark.
 
+These historical figures are separate from the later clean-v1 Quick Mode run
+below. Do not combine the two tables.
+
 | Model | Classification Acc. | Macro-F1 | Retrieval P@5 | Retrieval mAP@10 | Cross-dataset P@5 | Cross-dataset mAP@10 |
 |---|---:|---:|---:|---:|---:|---:|
 | PCA + KNN | 0.2333 | 0.2216 | — | — | — | — |
@@ -211,7 +217,24 @@ The following results were obtained during the iterative development of the proj
 | ResNet18 fine-tuned | 0.9250 | 0.9248 | 0.9183 | 0.9014 | 0.9020 | 0.8634 |
 | DINOv2 frozen + Linear SVM / FAISS | **1.0000** | **1.0000** | **0.9617** | **0.9250** | **0.9703** | **0.9310** |
 
-### 6.2 Preliminary observations
+### 6.2 Current clean-v1 Quick Mode evidence
+
+The notebook's saved outputs include a newer smoke test on 20 classes. Its
+metrics and integrity counts are transcribed in
+[`results/preliminary_quick_mode/`](results/preliminary_quick_mode/). In this
+run DINOv2 is strongest among the tested methods, but Quick Mode's restricted
+class/sample set and two-epoch ResNet run mean these values are **not** the
+official final result.
+
+| Model | Accuracy | Macro-F1 | P@5 | mAP@10 | Cross P@5 | Cross mAP@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| PCA + KNN | 0.2083 | 0.2011 | 0.1300 | 0.0548 | — | — |
+| HOG + Linear SVM | 0.1167 | 0.1206 | 0.0700 | 0.0294 | — | — |
+| MobileNetV3-Small frozen + KNN cosine | 0.8000 | 0.7865 | 0.6867 | 0.5023 | 0.7120 | 0.5471 |
+| ResNet18 fine-tuned | 0.7750 | 0.7499 | 0.7817 | 0.7249 | 0.8032 | 0.7323 |
+| DINOv2 frozen + Linear SVM / FAISS | **0.9667** | **0.9672** | **0.9350** | **0.8982** | **0.9488** | **0.9094** |
+
+### 6.3 Historical preliminary observations
 
 The preliminary runs show a clear progression in representation quality.
 
@@ -227,7 +250,7 @@ The main hypothesis suggested by these experiments is:
 
 However, this statement remains a **preliminary hypothesis** until the full clean benchmark is completed.
 
-### 6.3 Why the preliminary numbers are not final
+### 6.4 Why the historical preliminary numbers are not final
 
 During development, the data-integrity audit detected duplicate or perceptually identical samples across the original Train / Validation / Test split. In one audited run, duplicate candidates were found between:
 
@@ -256,7 +279,7 @@ All models evaluated on the exact same split
 
 The same principle is also applied to the external Wild Animals evaluation by removing cross-dataset duplicate candidates before computing cross-dataset retrieval metrics.
 
-### 6.4 Official clean benchmark
+### 6.5 Official clean benchmark
 
 The authoritative final results must come from:
 
@@ -282,7 +305,12 @@ The integrity report is exported as:
 integrity_summary.csv
 ```
 
-At the current repository snapshot, the clean benchmark pipeline is implemented, but a completed full-mode `benchmark_results.csv` is not included in the repository. Therefore, this README intentionally does **not** invent or promote preliminary values as final results.
+At the current repository snapshot, the notebook contains a completed **Quick
+Mode** run (20 classes, 800 working images, 560/120/120 train/validation/test,
+2 ResNet epochs). Its outputs are recorded in
+[`results/preliminary_quick_mode/`](results/preliminary_quick_mode/). They are
+useful for checking the pipeline, but are **not** the official full 90-class
+benchmark. A completed full-mode `benchmark_results.csv` is not yet available.
 
 Once the full-mode benchmark is executed, this section should be replaced or extended with the authoritative table:
 
@@ -329,9 +357,11 @@ The backend is intentionally **model-agnostic**. The public API should remain st
 
 ```text
 BTL/
-├── docs/
-│   └── plan.md
-│
+├── results/
+│   └── preliminary_quick_mode/
+│       ├── benchmark_results.csv
+│       ├── integrity_summary.csv
+│       └── run_config.json
 ├── notebook/
 │   └── Animal_Visual_Search_Clean_Benchmark_v1.ipynb
 │
@@ -350,6 +380,9 @@ BTL/
     │   │   └── schemas.py
     │   │
     │   ├── scripts/
+    │   │   ├── build_full90_artifacts.py
+    │   │   ├── build_real_artifacts.py
+    │   │   ├── e2e_smoke.py
     │   │   ├── make_synthetic_artifacts.py
     │   │   └── serving_export.py
     │   │
@@ -364,7 +397,9 @@ BTL/
     │   └── requirements.txt
     │
     └── frontend/
-        └── # frontend implementation
+        ├── src/
+        ├── package.json
+        └── vite.config.ts
 ```
 
 ---
@@ -613,45 +648,10 @@ Covered behaviors include:
 
 ## 14. Frontend
 
-The frontend layer is the next application phase.
-
-The planned frontend only depends on the stable backend API and does not need to know which ML encoder is currently active.
-
-Recommended stack:
-
-```text
-React + TypeScript + Vite
-```
-
-Suggested MVP flow:
-
-```text
-Empty state
-   ↓
-Select / drag-and-drop animal image
-   ↓
-Image preview
-   ↓
-POST /api/v1/search
-   ↓
-Loading state
-   ↓
-Species + confidence
-   ↓
-Top-K similar image grid
-```
-
-Recommended frontend components:
-
-```text
-ImageUploader
-PredictionCard
-ResultGrid
-ResultCard
-ModelInfo
-```
-
-The frontend should focus on demonstrating the ML system rather than adding unrelated product features such as authentication or user profiles.
+The React + TypeScript + Vite frontend is implemented in `src/frontend`. It
+supports image selection and preview, Top-K selection, prediction/confidence,
+retrieval results, model information, and loading/error/empty states. See
+[`src/frontend/README.md`](src/frontend/README.md) for setup and commands.
 
 ---
 
@@ -701,8 +701,8 @@ src/backend/NOTEBOOK_INTEGRATION.md
 | FastAPI backend | ✅ |
 | API schemas and validation | ✅ |
 | Backend tests | ✅ |
-| Real serving artifact export | 🔄 Run from final notebook |
-| Frontend | 🔄 Next phase |
+| Real serving artifact export from the official clean benchmark | 🔄 Pending full benchmark |
+| Frontend implementation and API integration | ✅ Implemented; verify with official serving package |
 | OOD / unknown-species detection | Planned |
 | SigLIP comparison | Optional / planned |
 | Grad-CAM and extended failure analysis | Optional / planned |
@@ -736,10 +736,11 @@ For official benchmark results:
    QUICK_MODE = False
    ```
 
-3. Restart the Colab runtime.
+3. Restart the notebook kernel/runtime.
 4. Run all cells from the beginning.
 5. Keep the generated fixed split unchanged when comparing models.
-6. Use the Phase 19 benchmark dashboard / `benchmark_results.csv`.
+6. Save the Phase 19 dashboard outputs under `results/official_full/` and use
+   that exported `benchmark_results.csv` in the report.
 7. Do not report preliminary Quick Mode metrics as final results.
 
 Important generated files include:
@@ -749,6 +750,9 @@ fixed_clean_split.csv
 benchmark_results.csv
 integrity_summary.csv
 resnet_test_predictions.csv
+run_config.json
+figures/classification_comparison.png
+figures/retrieval_comparison.png
 animal90_clean_metadata.csv
 wild_animals_clean_external_metadata.csv
 ```

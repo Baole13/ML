@@ -15,8 +15,10 @@ artifact layout the backend expects:
     ├── dino_gallery.faiss
     └── gallery/<species>/<file>
 
-It also emits a *calibrated* classifier: the notebook's raw ``LinearSVC`` is
-wrapped in ``CalibratedClassifierCV`` so the API can report a real confidence.
+It also emits a probability-capable classifier: the notebook's raw
+``LinearSVC`` is wrapped in ``CalibratedClassifierCV``. The resulting values
+are probability estimates; evaluate calibration on held-out data before
+describing them as reliable confidence scores.
 """
 
 from __future__ import annotations
@@ -108,7 +110,7 @@ def export_serving_package(
     gallery_dino = _normalize(np.asarray(gallery_dino, dtype="float32"))
     n, d = gallery_dino.shape
 
-    # 2) Calibrate the classifier so the API can report real confidence.
+    # 2) Fit probability estimates. Validate their calibration on held-out data.
     #    CalibratedClassifierCV refits internal clones of the base estimator.
     #    We pass the estimator positionally so this works across sklearn
     #    versions (the kwarg was renamed base_estimator -> estimator in 1.2+).

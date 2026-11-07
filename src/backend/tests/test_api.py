@@ -101,3 +101,13 @@ def test_gallery_path_traversal_blocked(client):
     resp = client.get("/gallery/../../manifest.json")
     # Either 404 (normalized away) — never leaks the file.
     assert resp.status_code in (404, 307)
+
+
+def test_gallery_rejects_sibling_with_shared_path_prefix(client, artifacts_dir):
+    # A string-prefix check would mistake `gallery_evil` for a child of `gallery`.
+    sibling = artifacts_dir / "gallery_evil"
+    sibling.mkdir()
+    (sibling / "secret.jpg").write_bytes(b"must not be served")
+
+    resp = client.get("/gallery/%2E%2E%2Fgallery_evil%2Fsecret.jpg")
+    assert resp.status_code == 404

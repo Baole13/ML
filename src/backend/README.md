@@ -24,7 +24,7 @@ Classifier head                     FAISS IndexFlatIP
           Gallery metadata → image URLs → JSON
 ```
 
-### Key design decisions (see `docs/plan.md`)
+### Key design decisions
 
 - **Contract-driven preprocessing.** Image size + normalization are read from
   `manifest.json`, never hard-coded, so the backend applies exactly the
@@ -33,8 +33,10 @@ Classifier head                     FAISS IndexFlatIP
   the classifier and the FAISS cosine index.
 - **Portable gallery.** Retrieval maps `FAISS position → stable id → metadata →
   /gallery/<file>`, independent of any Colab/Kaggle filesystem paths.
-- **Calibrated confidence.** The export wraps the notebook's `LinearSVC` in
-  `CalibratedClassifierCV` so the API returns a real probability. Production
+- **Calibrated probability estimate.** The export wraps the notebook's
+  `LinearSVC` in `CalibratedClassifierCV` so the API can return class
+  probability estimates. They should not be described as trustworthy
+  confidence until calibration is evaluated on held-out data. Production
   artifacts must ship a calibrated head: by default the engine **fails fast at
   startup** if the loaded classifier lacks `predict_proba`. Set
   `REQUIRE_CALIBRATED=false` only for local/synthetic artifacts, which then
